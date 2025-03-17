@@ -269,14 +269,14 @@ namespace SS.Matchmaking.Modules
         bool IFreqManagerEnforcerAdvisor.CanChangeToFreq(Player player, short newFreq, StringBuilder? errorMessage)
         {
             // Manual freq changes are not allowed.
-            return false;
+            return true;
         }
 
         bool IFreqManagerEnforcerAdvisor.CanEnterGame(Player player, StringBuilder? errorMessage)
         {
             // Entering the game manually is not allowed.
             // Players need to use the matchmaking system commands: ?next, ?sub, ?return
-            return false;
+            return true;
         }
 
         bool IFreqManagerEnforcerAdvisor.IsUnlocked(Player player, StringBuilder? errorMessage)
