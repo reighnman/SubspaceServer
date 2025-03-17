@@ -238,37 +238,36 @@ namespace SS.Matchmaking.Modules
         ShipMask IFreqManagerEnforcerAdvisor.GetAllowableShips(Player player, ShipType ship, short freq, StringBuilder? errorMessage)
         {
             if (!player.TryGetExtraData(_pdKey, out PlayerData? playerData))
-                return ShipMask.None;
+                return ShipMask.All;
 
-            // When in a match, allow a player to do a normal ship change instead of using ?sc
-            // If during a period they can ship change (start of the match or after death), then allow (ShipMask.All).
-            // If during a period they cannot ship change, but have additional lives, don't allow, but set their next ship.
-
+            // Require ?sc whenever the player is in an active match
             PlayerSlot? playerSlot = playerData.AssignedSlot;
             if (playerSlot is not null // player is in a match
                 && player.Arena is not null // player is in an arena
                 && player.Arena == playerSlot.MatchData.Arena // player is in the match's arena
-                && (IsStartingPhase(playerSlot.MatchData.Status)
-                    || (playerSlot.MatchData.Status == MatchStatus.InProgress
-                        && playerSlot.AllowShipChangeExpiration is not null && playerSlot.AllowShipChangeExpiration > DateTime.UtcNow
-                    )  // is within the period that ship changes are allowed (e.g. starting phase or after a death)
-                ))
+            )
             {
-                return ShipMask.All;
+                return ShipMask.None;
             }
 
-            if (ship != ShipType.Spec) // should not possible to be spec, but checking just in case
-            {
-                playerData.NextShip = ship;
-                _chat.SendMessage(player, $"Your next ship will be a {ship}.");
-            }
-
-            return player.Ship.GetShipMask(); // Only allow the current ship. In other words, no change allowed.
+            return ShipMask.All; // Only allow the current ship. In other words, no change allowed.
         }
 
         bool IFreqManagerEnforcerAdvisor.CanChangeToFreq(Player player, short newFreq, StringBuilder? errorMessage)
         {
-            // Manual freq changes are not allowed.
+            if (!player.TryGetExtraData(_pdKey, out PlayerData? playerData))
+                return true;
+            
+            // Require ?sc whenever the player is in an active match
+            PlayerSlot? playerSlot = playerData.AssignedSlot;
+             if (playerSlot is not null // player is in a match
+                && player.Arena is not null // player is in an arena
+                && player.Arena == playerSlot.MatchData.Arena // player is in the match's arena
+            )
+            {
+                return false;
+            }
+
             return true;
         }
 
