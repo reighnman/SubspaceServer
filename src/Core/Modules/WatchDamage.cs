@@ -294,7 +294,7 @@ namespace SS.Core.Modules
 
         private void ToggleWatch(Player player, bool on)
         {
-            if (player.Type == ClientType.Continuum)
+            if (player.Type == ClientType.Continuum || player.Type == ClientType.VIE)
             {
                 Span<byte> packet = [(byte)S2CPacketType.ToggleDamage, on ? (byte)1 : (byte)0];
                 _network.SendToOne(player, packet, NetSendFlags.Reliable | NetSendFlags.PriorityN1);
