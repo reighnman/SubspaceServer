@@ -255,7 +255,7 @@ namespace SS.Core.Modules
             }
             else if (target.TryGetPlayerTarget(out Player? targetPlayer))
             {
-                if (targetPlayer.Type != ClientType.Continuum)
+                if (targetPlayer.Type != ClientType.Continuum || targetPlayer.Type != ClientType.VIE)
                 {
                     _chat.SendMessage(player, $"Watchdamage requires {targetPlayer.Name} to use Continuum.");
                     return;
